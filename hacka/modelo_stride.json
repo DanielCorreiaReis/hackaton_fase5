@@ -1,0 +1,758 @@
+{
+  "web_app_relacional": {
+    "descricao": "Aplicação web em 3 camadas com banco de dados relacional.",
+    "componentes": {
+      "user": {
+        "ameacas": {
+          "Spoofing": "Falhas na autenticação podem permitir falsificação de identidade.",
+          "Repudiation": "Sem logs adequados, ações do usuário não podem ser rastreadas."
+        },
+        "contramedidas": {
+          "Spoofing": "Implementar autenticação multifator (MFA).",
+          "Repudiation": "Habilitar logging detalhado com carimbo de tempo e identidade."
+        }
+      },
+      "web_server": {
+        "ameacas": {
+          "Tampering": "Código pode ser alterado se o servidor for comprometido.",
+          "Denial of Service": "Pode sofrer ataques de negação de serviço (DoS)."
+        },
+        "contramedidas": {
+          "Tampering": "Usar deploy seguro com assinatura de código.",
+          "Denial of Service": "Implementar balanceador com proteção contra DoS."
+        }
+      },
+      "sql_database": {
+        "ameacas": {
+          "Elevation of Privilege": "Injeção SQL pode escalar privilégios.",
+          "Information Disclosure": "Exposição de dados sensíveis."
+        },
+        "contramedidas": {
+          "Elevation of Privilege": "Usar ORM seguro, validação de entrada.",
+          "Information Disclosure": "Criptografar dados sensíveis em repouso e em trânsito."
+        }
+      }
+    }
+  },
+  "serverless": {
+    "descricao": "Arquitetura serverless baseada em funções e serviços gerenciados.",
+    "componentes": {
+      "user": {
+        "ameacas": {
+          "Spoofing": "Acesso não autorizado às funções via APIs públicas."
+        },
+        "contramedidas": {
+          "Spoofing": "OAuth 2.0 + API Key + validação de origem."
+        }
+      },
+      "api_gateway": {
+        "ameacas": {
+          "Information Disclosure": "Se configurado incorretamente, pode expor dados sensíveis.",
+          "Denial of Service": "Sobrecarga por chamadas excessivas."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Configurar CORS e permissões corretamente.",
+          "Denial of Service": "Habilitar rate-limiting e cache."
+        }
+      },
+      "lambda": {
+        "ameacas": {
+          "Tampering": "Funções maliciosas ou modificadas podem alterar dados.",
+          "Elevation of Privilege": "Função com permissões excessivas."
+        },
+        "contramedidas": {
+          "Tampering": "Controlar deploy via CI/CD com verificação de integridade.",
+          "Elevation of Privilege": "Princípio do menor privilégio no IAM."
+        }
+      },
+      "dynamodb": {
+        "ameacas": {
+          "Information Disclosure": "Dados lidos sem criptografia.",
+          "Tampering": "Alterações não autorizadas nos registros."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Ativar criptografia em repouso.",
+          "Tampering": "Auditoria com versionamento de dados."
+        }
+      }
+    }
+  },
+  "microservicos": {
+    "descricao": "Arquitetura baseada em múltiplos serviços independentes e escaláveis, cada um responsável por uma função específica.",
+    "componentes": {
+      "api_gateway": {
+        "ameacas": {
+          "Spoofing": "Sem autenticação adequada, usuários maliciosos podem se passar por serviços legítimos.",
+          "Information Disclosure": "Exposição indevida de APIs públicas."
+        },
+        "contramedidas": {
+          "Spoofing": "Autenticação JWT entre serviços.",
+          "Information Disclosure": "Rate limiting, autenticação e CORS configurado."
+        }
+      },
+      "container": {
+        "ameacas": {
+          "Tampering": "Alteração de imagens pode comprometer o serviço.",
+          "Elevation of Privilege": "Contêineres mal isolados podem acessar recursos do host."
+        },
+        "contramedidas": {
+          "Tampering": "Assinatura de imagem e verificação contínua.",
+          "Elevation of Privilege": "Executar contêineres como usuários não root e usar namespaces."
+        }
+      },
+      "service_mesh": {
+        "ameacas": {
+          "Information Disclosure": "Tráfego interno pode ser interceptado se não criptografado.",
+          "Denial of Service": "Ataques podem sobrecarregar serviços por meio do roteamento."
+        },
+        "contramedidas": {
+          "Information Disclosure": "TLS mútuo entre serviços.",
+          "Denial of Service": "Circuit breakers e retries com backoff."
+        }
+      }
+    }
+  },
+  "data_lake": {
+    "descricao": "Armazenamento centralizado para dados brutos de múltiplas fontes, estruturadas e não estruturadas.",
+    "componentes": {
+      "s3": {
+        "ameacas": {
+          "Information Disclosure": "Buckets públicos podem expor dados sensíveis.",
+          "Tampering": "Dados podem ser sobrescritos sem controle."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Políticas de acesso restritivas e criptografia em repouso.",
+          "Tampering": "Versionamento ativado e logs de auditoria."
+        }
+      },
+      "athena": {
+        "ameacas": {
+          "Information Disclosure": "Consultas podem acessar dados de outras equipes.",
+          "Repudiation": "Consultas não rastreáveis podem comprometer a rastreabilidade."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Controle de acesso por banco de dados.",
+          "Repudiation": "Habilitar logs de consulta detalhados."
+        }
+      },
+      "glue": {
+        "ameacas": {
+          "Tampering": "Transformações podem corromper dados sem validação.",
+          "Elevation of Privilege": "Scripts podem acessar dados fora do escopo esperado."
+        },
+        "contramedidas": {
+          "Tampering": "Testes e validações em etapas de ETL.",
+          "Elevation of Privilege": "Permissões limitadas para jobs no IAM."
+        }
+      }
+    }
+  },
+  "arquitetura_event_driven": {
+    "descricao": "Sistemas orientados a eventos que reagem a gatilhos assíncronos com acoplamento fraco entre componentes.",
+    "componentes": {
+      "event_bridge": {
+        "ameacas": {
+          "Tampering": "Eventos podem ser interceptados ou alterados se não forem assinados.",
+          "Information Disclosure": "Eventos sensíveis podem ser expostos sem criptografia."
+        },
+        "contramedidas": {
+          "Tampering": "Assinar mensagens com tokens ou certificados.",
+          "Information Disclosure": "Criptografar eventos e aplicar controle de acesso."
+        }
+      },
+      "lambda": {
+        "ameacas": {
+          "Elevation of Privilege": "Permissões mal configuradas podem dar acesso além do necessário.",
+          "Denial of Service": "Execuções em massa podem sobrecarregar os serviços."
+        },
+        "contramedidas": {
+          "Elevation of Privilege": "Aplicar princípio do menor privilégio no IAM.",
+          "Denial of Service": "Limitar invocações e definir timeouts."
+        }
+      },
+      "sqs": {
+        "ameacas": {
+          "Repudiation": "A falta de rastreabilidade nas mensagens dificulta auditoria.",
+          "Tampering": "Mensagens podem ser alteradas no trânsito."
+        },
+        "contramedidas": {
+          "Repudiation": "Habilitar logs detalhados e rastreamento de mensagens.",
+          "Tampering": "Usar criptografia e autenticação entre produtores e consumidores."
+        }
+      }
+    }
+  },
+  "plataforma_iot": {
+    "descricao": "Arquiteturas voltadas para captura e processamento de dados de dispositivos IoT, com integração em nuvem.",
+    "componentes": {
+      "iot_device": {
+        "ameacas": {
+          "Spoofing": "Dispositivos não autenticados podem simular dados falsos.",
+          "Tampering": "Dispositivos físicos podem ser manipulados."
+        },
+        "contramedidas": {
+          "Spoofing": "Autenticação por certificado no provisionamento.",
+          "Tampering": "Proteção física e firmware assinado."
+        }
+      },
+      "iot_hub": {
+        "ameacas": {
+          "Denial of Service": "Conexões simultâneas podem esgotar a capacidade.",
+          "Information Disclosure": "Dados em trânsito não criptografados podem ser interceptados."
+        },
+        "contramedidas": {
+          "Denial of Service": "Escalonar automaticamente o hub e limitar conexões.",
+          "Information Disclosure": "TLS obrigatório para comunicação com dispositivos."
+        }
+      },
+      "cosmosdb": {
+        "ameacas": {
+          "Information Disclosure": "Exposição indevida de dados armazenados.",
+          "Tampering": "Alteração de dados por funções maliciosas."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Usar firewalls, chaves e RBAC.",
+          "Tampering": "Auditoria de alterações e validação de origem das escritas."
+        }
+      }
+    }
+  },
+  "api_management_workflow": {
+    "descricao": "Fluxo de gerenciamento de APIs no Azure, com autenticação Microsoft Entra, API Gateway, Developer Portal e Logic Apps orquestrando integrações com serviços Azure, SaaS e web (REST/SOAP).",
+    "componentes": {
+      "user": {
+        "ameacas": {
+          "Spoofing": "Usuários podem tentar se passar por identidades válidas.",
+          "Repudiation": "Sem rastreabilidade, chamadas à API podem não ser atribuíveis."
+        },
+        "contramedidas": {
+          "Spoofing": "MFA e tokens de acesso curtos (OAuth 2.0).",
+          "Repudiation": "Logs imutáveis no Azure Monitor e Application Insights."
+        }
+      },
+      "microsoft_entra": {
+        "ameacas": {
+          "Tampering": "Configurações de identidade podem ser alteradas para permitir acesso indevido.",
+          "Denial of Service": "Ataques de senha/lockout podem impedir logins legítimos."
+        },
+        "contramedidas": {
+          "Tampering": "Políticas de alteração aprovadas e alertas de auditoria.",
+          "Denial of Service": "Proteção de IP/password spray e lockout inteligente."
+        }
+      },
+      "api_gateway": {
+        "ameacas": {
+          "Information Disclosure": "Configuração incorreta pode expor rotas internas.",
+          "Denial of Service": "Ataques volumétricos podem exaurir throughput."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Políticas de redação de respostas e revisão de CORS.",
+          "Denial of Service": "Rate limiting, throttling e cache em memória."
+        }
+      },
+      "developer_portal": {
+        "ameacas": {
+          "Information Disclosure": "Documentação sensível ou tokens de exemplo vazados.",
+          "Tampering": "Usuários maliciosos podem tentar alterar Swagger ou exemplos."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Autenticação para acesso a APIs privadas.",
+          "Tampering": "Controle de versão e revisão de pull‑requests de documentação."
+        }
+      },
+      "logic_apps": {
+        "ameacas": {
+          "Tampering": "Workflows podem ser modificados para executar lógica maliciosa.",
+          "Elevation of Privilege": "Conexões gerenciadas com permissões excessivas."
+        },
+        "contramedidas": {
+          "Tampering": "Versão e aprovação de CI/CD em pipelines.",
+          "Elevation of Privilege": "Principle of least privilege em conexões e Managed Identity."
+        }
+      },
+      "azure_services": {
+        "ameacas": {
+          "Information Disclosure": "Dados sensíveis expostos se controles de acesso falharem.",
+          "Repudiation": "Operações não rastreadas em serviços PaaS."
+        },
+        "contramedidas": {
+          "Information Disclosure": "RBAC, redes privadas (Private Endpoints) e TLS.",
+          "Repudiation": "Diagnostic logs para Storage, SQL, etc."
+        }
+      },
+      "saas_services": {
+        "ameacas": {
+          "Availability": "Dependência de terceiros pode causar interrupções.",
+          "Information Disclosure": "Dados trafegando para SaaS externos sem criptografia."
+        },
+        "contramedidas": {
+          "Availability": "Timeouts e circuit‑breakers em Logic Apps.",
+          "Information Disclosure": "TLS obrigatório e políticas DLP."
+        }
+      },
+      "rest_api": {
+        "ameacas": {
+          "Tampering": "Manipulação de payloads/verbos não esperados.",
+          "Information Disclosure": "Respostas detalhadas podem vazar stack trace."
+        },
+        "contramedidas": {
+          "Tampering": "Validação de esquema JSON e cabeçalhos.",
+          "Information Disclosure": "Sanitização de erros, Content‑Security‑Policy."
+        }
+      },
+      "soap_api": {
+        "ameacas": {
+          "Information Disclosure": "WS‑Security configurado incorretamente.",
+          "Repudiation": "Sem logs de requisição SOAP."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Assinatura XML e encriptação.",
+          "Repudiation": "Logs detalhados de SOAP envelopes."
+        }
+      }
+    }
+  },
+  "aws_multi_az_web": {
+    "descricao": "Arquitetura web altamente disponível na AWS em múltiplas zonas de disponibilidade com serviços de borda e camadas de dados replicadas.",
+    "componentes": {
+      "user": {
+        "ameacas": {
+          "Spoofing": "Usuários falsos tentando acessar recursos.",
+          "Repudiation": "Ações do usuário não rastreadas."
+        },
+        "contramedidas": {
+          "Spoofing": "Federation + MFA via Cognito/OIDC.",
+          "Repudiation": "CloudTrail + Cognito logs."
+        }
+      },
+      "cloudfront": {
+        "ameacas": {
+          "Information Disclosure": "Conteúdo de cache privado pode ser exposto.",
+          "Denial of Service": "Ataques DDoS podem saturar borda."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Signed URLs e cache‑key restrictive.",
+          "Denial of Service": "Shield Standard + limitações de taxa."
+        }
+      },
+      "aws_waf": {
+        "ameacas": {
+          "Tampering": "Regras podem ser desativadas acidentalmente.",
+          "Information Disclosure": "Falsos negativos expõem endpoints."
+        },
+        "contramedidas": {
+          "Tampering": "Controle de mudança via IaC (Terraform/CloudFormation).",
+          "Information Disclosure": "Alertas CloudWatch para mudanças em ACL."
+        }
+      },
+      "aws_shield": {
+        "ameacas": {
+          "Availability": "Se não configurado, ataques DDoS podem afetar serviço."
+        },
+        "contramedidas": {
+          "Availability": "Ativar Shield Advanced em ALB e Route 53."
+        }
+      },
+      "application_load_balancer": {
+        "ameacas": {
+          "Information Disclosure": "Headers revelando detalhes internos.",
+          "Denial of Service": "Saturação de listeners."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Strip Server headers, HTTPS only.",
+          "Denial of Service": "WAF rules + Auto Scaling listeners."
+        }
+      },
+      "ec2": {
+        "ameacas": {
+          "Tampering": "Acesso SSH não autorizado pode alterar instâncias.",
+          "Elevation of Privilege": "Escalação pela exploração do SO convidado."
+        },
+        "contramedidas": {
+          "Tampering": "SSM Session Manager + bastionless, sem chaves.",
+          "Elevation of Privilege": "Patch Management automático (SSM)."
+        }
+      },
+      "auto_scaling": {
+        "ameacas": {
+          "Denial of Service": "Configuração inadequada pode não escalar e causar falha.",
+          "Cost Impact": "Escala excessiva gerando custos inesperados."
+        },
+        "contramedidas": {
+          "Denial of Service": "Alarmes CloudWatch dretransport and proper scaling policies.",
+          "Cost Impact": "Limites de capacidade máxima e verificação de autoscaling."
+        }
+      },
+      "rds": {
+        "ameacas": {
+          "Information Disclosure": "Backup público ou snapshots compartilhados acidentalmente.",
+          "Tampering": "Queries maliciosas podem alterar dados."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Snapshots privados + KMS encriptação.",
+          "Tampering": "IAM roles + SQL firewall rules."
+        }
+      },
+      "elasticache": {
+        "ameacas": {
+          "Information Disclosure": "Dados em cache sem TLS.",
+          "Tampering": "Comandos não autenticados podem alterar cache."
+        },
+        "contramedidas": {
+          "Information Disclosure": "TLS in‑flight, AUTH token requerido.",
+          "Tampering": "IAM auth e Security Groups restritivos."
+        }
+      },
+      "efs": {
+        "ameacas": {
+          "Information Disclosure": "Sistema de arquivos montado em instâncias não autorizadas.",
+          "Tampering": "Alterações indevidas em arquivos compartilhados."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Access Points com POSIX IDs específicos.",
+          "Tampering": "Backup automático e AWS Backup Vault."
+        }
+      },
+      "cloudwatch": {
+        "ameacas": {
+          "Repudiation": "Logs podem ser apagados ou desabilitados.",
+          "Information Disclosure": "Logs sensíveis não criptografados."
+        },
+        "contramedidas": {
+          "Repudiation": "KMS‑encrypted log groups e retenção imutável.",
+          "Information Disclosure": "Mascaramento de dados sensíveis nos logs."
+        }
+      },
+      "ses": {
+        "ameacas": {
+          "Spoofing": "Phishing via domínios não verificados.",
+          "Information Disclosure": "Conteúdo de e‑mails interceptado."
+        },
+        "contramedidas": {
+          "Spoofing": "DKIM, SPF e DMARC configurados.",
+          "Information Disclosure": "TLS obrigatório para SMTP/API."
+        }
+      }
+    }
+  },
+  "aws_three_tier_web": {
+    "descricao": "Arquitetura web de três camadas na AWS distribuída em múltiplas AZs (Web, App e DB tiers) com camadas de borda, balanceamento, cache e armazenamento compartilhado.",
+    "componentes": {
+      "route_53": {
+        "ameacas": {
+          "Denial of Service": "Ataques DDoS ou falha de delegação podem tornar domínio inacessível.",
+          "Spoofing": "Configurações incorretas de DNS podem redirecionar tráfego para hosts maliciosos."
+        },
+        "contramedidas": {
+          "Denial of Service": "Enable AWS Shield Advanced e use políticas de TTL curtas para recuperação rápida.",
+          "Spoofing": "DNSSEC e revisões de zonas com princípio de menor privilégio."
+        }
+      },
+      "cloudfront": {
+        "ameacas": {
+          "Information Disclosure": "Conteúdo de cache privado pode ser exposto.",
+          "Denial of Service": "Ataques DDoS podem saturar borda."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Signed URLs e cache‑key restrictive.",
+          "Denial of Service": "Shield Standard + limitações de taxa."
+        }
+      },
+      "aws_waf": {
+        "ameacas": {
+          "Tampering": "Regras podem ser desativadas acidentalmente.",
+          "Information Disclosure": "Falsos negativos expõem endpoints."
+        },
+        "contramedidas": {
+          "Tampering": "Controle de mudança via IaC (Terraform/CloudFormation).",
+          "Information Disclosure": "Alertas CloudWatch para mudanças em ACL."
+        }
+      },
+      "aws_shield": {
+        "ameacas": {
+          "Availability": "Se não configurado, ataques DDoS podem afetar serviço."
+        },
+        "contramedidas": {
+          "Availability": "Ativar Shield Advanced em ALB e Route 53."
+        }
+      },
+      "elastic_load_balancer": {
+        "ameacas": {
+          "Information Disclosure": "Headers revelando detalhes internos.",
+          "Denial of Service": "Saturação de listeners."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Strip Server headers, HTTPS only.",
+          "Denial of Service": "WAF rules + Auto Scaling listeners."
+        }
+      },
+      "ec2_web_tier": {
+        "ameacas": {
+          "Tampering": "Acesso SSH não autorizado pode alterar instâncias.",
+          "Elevation of Privilege": "Escalação pela exploração do SO convidado."
+        },
+        "contramedidas": {
+          "Tampering": "SSM Session Manager + bastionless, sem chaves.",
+          "Elevation of Privilege": "Patch Management automático (SSM)."
+        }
+      },
+      "ec2_app_tier": {
+        "ameacas": {
+          "Tampering": "Acesso SSH não autorizado pode alterar instâncias.",
+          "Elevation of Privilege": "Escalação pela exploração do SO convidado."
+        },
+        "contramedidas": {
+          "Tampering": "SSM Session Manager + bastionless, sem chaves.",
+          "Elevation of Privilege": "Patch Management automático (SSM)."
+        }
+      },
+      "auto_scaling_web_tier": {
+        "ameacas": {
+          "Denial of Service": "Configuração inadequada pode não escalar e causar falha.",
+          "Cost Impact": "Escala excessiva gerando custos inesperados."
+        },
+        "contramedidas": {
+          "Denial of Service": "Alarmes CloudWatch dretransport and proper scaling policies.",
+          "Cost Impact": "Limites de capacidade máxima e verificação de autoscaling."
+        }
+      },
+      "auto_scaling_app_tier": {
+        "ameacas": {
+          "Denial of Service": "Configuração inadequada pode não escalar e causar falha.",
+          "Cost Impact": "Escala excessiva gerando custos inesperados."
+        },
+        "contramedidas": {
+          "Denial of Service": "Alarmes CloudWatch dretransport and proper scaling policies.",
+          "Cost Impact": "Limites de capacidade máxima e verificação de autoscaling."
+        }
+      },
+      "rds_primary": {
+        "ameacas": {
+          "Information Disclosure": "Backup público ou snapshots compartilhados acidentalmente.",
+          "Tampering": "Queries maliciosas podem alterar dados."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Snapshots privados + KMS encriptação.",
+          "Tampering": "IAM roles + SQL firewall rules."
+        }
+      },
+      "rds_secondary": {
+        "ameacas": {
+          "Information Disclosure": "Backup público ou snapshots compartilhados acidentalmente.",
+          "Tampering": "Queries maliciosas podem alterar dados."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Snapshots privados + KMS encriptação.",
+          "Tampering": "IAM roles + SQL firewall rules."
+        }
+      },
+      "efs": {
+        "ameacas": {
+          "Information Disclosure": "Sistema de arquivos montado em instâncias não autorizadas.",
+          "Tampering": "Alterações indevidas em arquivos compartilhados."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Access Points com POSIX IDs específicos.",
+          "Tampering": "Backup automático e AWS Backup Vault."
+        }
+      },
+      "elasticache": {
+        "ameacas": {
+          "Information Disclosure": "Dados em cache sem TLS.",
+          "Tampering": "Comandos não autenticados podem alterar cache."
+        },
+        "contramedidas": {
+          "Information Disclosure": "TLS in‑flight, AUTH token requerido.",
+          "Tampering": "IAM auth e Security Groups restritivos."
+        }
+      },
+      "vpc": {
+        "ameacas": {
+          "Tampering": "Alterações de roteamento ou ACLs podem expor recursos internos.",
+          "Information Disclosure": "Sub-redes mal segmentadas podem permitir acesso indevido."
+        },
+        "contramedidas": {
+          "Tampering": "Infraestrutura como código com aprovação e rastreamento de mudanças.",
+          "Information Disclosure": "Segmentar redes e usar Security Groups e Network ACLs restritivos."
+        }
+      },
+      "nat_gateway": {
+        "ameacas": {
+          "Denial of Service": "Exaustão de conexões pode interromper saída da VPC.",
+          "Spoofing": "Tráfego de saída pode mascarar origem real."
+        },
+        "contramedidas": {
+          "Denial of Service": "Auto Scaling e múltiplos NAT Gateways por AZ.",
+          "Spoofing": "Flow logs e inspeção de tráfego com AWS Network Firewall."
+        }
+      },
+      "public_subnet": {
+        "ameacas": {
+          "Information Disclosure": "Configuração incorreta pode expor portas e serviços.",
+          "Tampering": "Alterações na rota podem redirecionar tráfego."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Security Groups/ACLs mínimos e revisão de regras.",
+          "Tampering": "Controle de mudanças e monitoramento de rotas."
+        }
+      },
+      "web_subnet": {
+        "ameacas": {
+          "Information Disclosure": "Configuração incorreta pode expor portas e serviços.",
+          "Tampering": "Alterações na rota podem redirecionar tráfego."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Security Groups/ACLs mínimos e revisão de regras.",
+          "Tampering": "Controle de mudanças e monitoramento de rotas."
+        }
+      },
+      "app_subnet": {
+        "ameacas": {
+          "Information Disclosure": "Configuração incorreta pode expor portas e serviços.",
+          "Tampering": "Alterações na rota podem redirecionar tráfego."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Security Groups/ACLs mínimos e revisão de regras.",
+          "Tampering": "Controle de mudanças e monitoramento de rotas."
+        }
+      },
+      "db_subnet": {
+        "ameacas": {
+          "Information Disclosure": "Configuração incorreta pode expor portas e serviços.",
+          "Tampering": "Alterações na rota podem redirecionar tráfego."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Security Groups/ACLs mínimos e revisão de regras.",
+          "Tampering": "Controle de mudanças e monitoramento de rotas."
+        }
+      },
+      "s3": {
+        "ameacas": {
+          "Information Disclosure": "Buckets públicos podem expor dados sensíveis.",
+          "Tampering": "Dados podem ser sobrescritos sem controle."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Políticas de acesso restritivas e criptografia em repouso.",
+          "Tampering": "Versionamento ativado e logs de auditoria."
+        }
+      }
+    }
+  },
+  "azure_data_analytics_pipeline": {
+    "descricao": "Pipeline de ingestão, armazenamento e análise de dados na Azure com Data Factory, Data Lake, Synapse, Analysis Services e visualização em Power BI autenticada via Microsoft Entra.",
+    "componentes": {
+      "microsoft_entra": {
+        "ameacas": {
+          "Tampering": "Configurações de identidade podem ser alteradas para permitir acesso indevido.",
+          "Denial of Service": "Ataques de senha/lockout podem impedir logins legítimos."
+        },
+        "contramedidas": {
+          "Tampering": "Políticas de alteração aprovadas e alertas de auditoria.",
+          "Denial of Service": "Proteção de IP/password spray e lockout inteligente."
+        }
+      },
+      "cosmos_db": {
+        "ameacas": {
+          "Information Disclosure": "Exposição indevida de dados armazenados.",
+          "Tampering": "Alteração de dados por funções maliciosas."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Usar firewalls, chaves e RBAC.",
+          "Tampering": "Auditoria de alterações e validação de origem das escritas."
+        }
+      },
+      "azure_sql_database": {
+        "ameacas": {
+          "Elevation of Privilege": "Injeção SQL pode escalar privilégios.",
+          "Information Disclosure": "Exposição de dados sensíveis.",
+          "Tampering": "Scripts não autorizados podem modificar dados ou esquema."
+        },
+        "contramedidas": {
+          "Elevation of Privilege": "Usar ORM seguro, validação de entrada.",
+          "Information Disclosure": "Criptografar dados sensíveis em repouso e em trânsito.",
+          "Tampering": "Políticas de RBAC e revisão de alterações de esquema."
+        }
+      },
+      "sql_server_on_prem": {
+        "ameacas": {
+          "Information Disclosure": "Dados sensíveis podem ser vazados durante a ingestão.",
+          "Tampering": "Dados podem ser alterados na origem antes da extração."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Conexão sobre VPN/ExpressRoute e criptografia TLS.",
+          "Tampering": "Checksums, CDC e validação após ingestão."
+        }
+      },
+      "relational_db_on_prem": {
+        "ameacas": {
+          "Information Disclosure": "Dados sensíveis podem ser vazados durante a ingestão.",
+          "Tampering": "Dados podem ser alterados na origem antes da extração."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Conexão sobre VPN/ExpressRoute e criptografia TLS.",
+          "Tampering": "Checksums, CDC e validação após ingestão."
+        }
+      },
+      "table_storage": {
+        "ameacas": {
+          "Information Disclosure": "Chaves de conta vazadas expõem tabelas.",
+          "Tampering": "Alterações diretas nos dados sem versionamento."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Chave gerenciada no Key Vault e RBAC.",
+          "Tampering": "Logs de auditoria e soft-delete."
+        }
+      },
+      "data_factory": {
+        "ameacas": {
+          "Elevation of Privilege": "Pipelines com Managed Identity excessiva.",
+          "Tampering": "Alteração de pipelines pode manipular dados."
+        },
+        "contramedidas": {
+          "Elevation of Privilege": "Princípio do menor privilégio nas conexões Linked Service.",
+          "Tampering": "CI/CD com revisão e versionamento de pipelines."
+        }
+      },
+      "azure_data_lake_storage": {
+        "ameacas": {
+          "Information Disclosure": "Buckets públicos podem expor dados sensíveis.",
+          "Tampering": "Dados podem ser sobrescritos sem controle."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Políticas de acesso restritivas (ACL e RBAC) e criptografia em repouso.",
+          "Tampering": "Versionamento ativado e logs de auditoria."
+        }
+      },
+      "azure_synapse_analytics": {
+        "ameacas": {
+          "Information Disclosure": "Dados em staging ou cache podem ser expostos.",
+          "Elevation of Privilege": "Credenciais de workspace comprometidas permitem acesso total."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Private Link, firewall e máscaras de dados dinâmicas.",
+          "Elevation of Privilege": "MFA + RBAC granular e segregação de workspaces."
+        }
+      },
+      "azure_analysis_services": {
+        "ameacas": {
+          "Information Disclosure": "Modelos podem conter dados confidenciais.",
+          "Denial of Service": "Processamentos pesados podem esgotar memória/CPU."
+        },
+        "contramedidas": {
+          "Information Disclosure": "RLS (Row Level Security) e criptografia.",
+          "Denial of Service": "Escalonar planos e monitorar cargas."
+        }
+      },
+      "power_bi": {
+        "ameacas": {
+          "Information Disclosure": "Relatórios podem expor dados sensíveis a usuários não autorizados.",
+          "Repudiation": "Ações de usuários na visualização podem não ser rastreadas."
+        },
+        "contramedidas": {
+          "Information Disclosure": "Workspaces dedicados e RLS.",
+          "Repudiation": "Audit logs habilitados no Power BI Admin."
+        }
+      }
+    }
+  }
+}
